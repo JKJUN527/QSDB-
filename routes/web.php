@@ -30,5 +30,6 @@ Route::get('/qsdb/region/modify', ['uses' => 'QSDBRegionController@regionModify'
 Route::get('/qsdb/products', ['uses' => 'QSDBProductController@productsIndex']);//页面显示
 Route::post('/qsdb/products/add', ['uses' => 'QSDBProductController@productsAdd']);//新增产品及模块记录
 Route::get('/qsdb/products/modify', ['uses' => 'QSDBProductController@productsModify']);//查询模块产品详情
-
+//配置项管理
+Route::get('/qsdb/conf', ['uses' => 'QSDBConfController@confIndex']);//页面显示
 
