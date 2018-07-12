@@ -105,7 +105,7 @@
                                                         <td class=" "><?php echo e($item->createTime); ?></td>
                                                         <td class=" ">
                                                             <button type="button" data-content="<?php echo e($item->id); ?>" class="btn btn-round btn-primary" name="modify">修改</button>
-                                                            <button type="button" data-content="<?php echo e($item->id); ?>" class="btn btn-round btn-danger" name="delete">删除</button>
+                                                            
                                                         </td>
                                                     </tr>
                                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -162,6 +162,33 @@
 <?php $__env->stopSection(); ?>
 <?php $__env->startSection('custom-script'); ?>
     <script>
+        $("#en-name").blur(function(){
+            var en_name = $("input[name='en-name']");
+            var formData = new FormData();
+            formData.append('region', en_name.val());
+            $.ajax({
+                url: "/qsdb/region/check",
+                type: "post",
+                dataType: 'text',
+                cache: false,
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function (data) {
+                    var result = JSON.parse(data);
+                    var en_name = $("input[name='en-name']");
+                    var submit = $('#modify-region');
+                    if(result.status == 400){
+                        setError(en_name, "en-name", "名称已占用");
+                        submit.attr('disabled','disabled');
+                        return;
+                    }else{
+                        removeError(en_name, "en-name");
+                        submit.removeAttr('disabled');
+                    }
+                }
+            })
+        });
         $("#modify-region").click(function () {
             var rid = $("input[name='region-id']");
             var ch_name = $("input[name='ch-name']");
