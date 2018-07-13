@@ -7,6 +7,7 @@
  */
 namespace App\Http\Controllers;
 
+use App\Moduleconf;
 use App\Products;
 use App\Region;
 use App\Std;
@@ -17,135 +18,90 @@ const AUTH_REGION = "conf";
 class QSDBConfController extends Controller
 {
     /*  页面显示api  */
+    public function init(){
+        $data['condition']['productId'] = -1;
+        $data['condition']['moduleId'] = -1;
+        $data['condition']['region'] = -1;
+//        $data['region'] = "";
+//        $data['conf'] = "";
+        return $data;
+    }
     public function confIndex (Request $request)
     {
         $data = array();
+
+        //初始化条件
+        //如果选择了产品及模块选项
+        //进行查询对应的区域
+        if($request->has('productId') && $request->has('moduleId') && $request->has('region')){
+            $data['condition']['productId'] = $request->input('productId');
+            $data['condition']['moduleId'] = $request->input('moduleId');
+            $data['condition']['region'] = $request->input('region');
+            //
+            $data['region'] = Region::all();
+//            $data['region'] = self::searchRegion($data['condition']);
+            if($data['condition']['region'] != -1 )
+                $data['conf'] = self::searchConf($data['condition']);
+        }else{
+            $tempCondition = self::init();
+            $data['condition'] = $tempCondition['condition'];
+//            $data['region'] = $tempCondition['region'];
+//            $data['conf'] = $tempCondition['conf'];
+        }
+
         $temp['products_module'] = DB::table('cproduct')
             ->rightjoin('cmodule','cproduct.productId','cmodule.productId')
             ->select('cproduct.productId','productName','productDesc','moduleId','moduleName')
             ->get();
-        $data = array();
+        $data['products_module'] = array();//返回产品模块数据
         foreach ($temp['products_module'] as $item ){
-            $data[$item->productId][$item->productName][] =  $item->moduleName;
-        }
-//        return $data;
-//        $data['conf'] = Region::orderBy('createTime','desc')->paginate(16);
+            $data['products_module'][$item->productId][$item->productName][] =  ['name'=>$item->moduleName,'moduleId'=>$item->moduleId];
+            }
 
+//        return $data;
         return view('qsdb.config',['data'=>$data]);
     }
-    public function productsIndex(Request $request){
+    //输入查询产品ID 模块ID
+    //输出对应的区域ID、名称
+    public function searchRegion($condition){
+        //拿到confid
         $data = array();
-//        $data['region'] = Region::orderBy('createTime','desc')->paginate(16);
-        $data['products'] = Products::all();
-        $data['products_module'] = DB::table('cproduct')
-            ->leftjoin('cmodule','cproduct.productId','cmodule.productId')
-            ->select('cproduct.productId','productName','productDesc','moduleId','moduleName','modulePrincipal','cmodule.createTime')
+        $confid = Moduleconf::where('moduleId',$condition['moduleId'])
+            ->where('productId',$condition['productId'])
+            ->select('confId')
+            ->get();
+        $region = Region::all();
+        foreach ($region as $item){
+            $table_name = "dconfvalue_" . $item['region'];
+            $count = DB::table($table_name)
+                ->wherein('confId',$confid)
+                ->count();
+            if($count > 0 ) $data[] = $item['region'];
+            continue;
+        }
+        return $data;
+    }
+    //输入区域ID
+    //输出对应区域下所有配置项
+    public function searchConf($condition){
+        if($condition['region'] == -1) return "";
+        $confid = Moduleconf::where('moduleId',$condition['moduleId'])
+            ->where('productId',$condition['productId'])
+            ->select('confId')
+            ->get();
+        $table_name = "dconfvalue_" . $condition['region'];
+        $conf = DB::table($table_name)
+            ->leftjoin('cconf',$table_name .".confId",'cconf.confId')
+            ->wherein($table_name . '.confId',$confid)
             ->paginate(16);
-
-//        return $data;
-
-        return view('qsdb.products',['data'=>$data]);
+        return $conf;
     }
 
-    /*   页面操作api   */
-    public function regionAdd(Request $request){
-        $data['status'] = 400;
-        $data['msg'] = "未知错误";
-        $username = 'jkjunjia';//可以从登陆session中获取信息
-        $old_table_name = ""; //用于修改表名使用
-        $new_table_name = ""; //用于修改表名使用
-        if(HomeController::hasAuth($username,AUTH_REGION)){
-            if($request->has('ch_name') && $request->has('en_name') && $request->has('rid')){
-                $ch_name = $request->input('ch_name');
-                $en_name = $request->input('en_name');
-                $rid = $request->input('rid');
+    //输入区域ID 配置ID（如果为-1则表示新增配置）配置项
+    //输出修改成功或失败
+    public function addConf(Request $request){
+        $data = array();
 
-                //修改或新增区域
-                if($rid == -1){
-                    $region = new Region();
-                }else{
-                    $region = Region::find($rid);
+    }
 
-                    $old_table_name = $region->region;
-                    $new_table_name = $en_name;
-                }
-                $region->region = $en_name;
-                $region->name = $ch_name;
-                try {
-                    if($region->save()){
-                        if($rid == -1 && HomeController::createTable($en_name) == 1){
-                            $data['status'] = 200;
-                            $data['msg'] = "操作成功";
-                        }else if($rid != -1 && HomeController::modifyTable($old_table_name,$new_table_name) == 1){
-                            $data['status'] = 200;
-                            $data['msg'] = "操作成功";
-                        }
-                        return $data;
-                    }else{
-                        $data['status'] = 400;
-                        $data['msg'] = "数据库错误";
-                        return $data;
-                    }
-                } catch(\Illuminate\Database\QueryException $ex) {
-                    $data['msg'] = "数据库错误";
-                    return $data;
-                }
-            }else{
-                $data['msg'] = "参数错误";
-                return $data;
-            }
-
-        }else{
-            $data['msg'] = "对不起，暂无处理权限，请联系管理员";
-            return $data;
-        }
-    }
-    public function regionModify(Request $request){
-        $data['status'] = 400;
-        $data['msg'] = "未知错误";
-        $username = 'jkjunjia';
-        if(HomeController::hasAuth($username,AUTH_REGION)){
-            if($request->has('rid')){
-                $rid = $request->input('rid');
-                $data['detail'] = Region::find($rid);
-                if($data['detail'] == ""){
-                    $data['msg'] = "查无结果";
-                }else{
-                    $data['status'] = 200;
-                    $data['msg'] = "查询成功";
-                }
-                return $data;
-            }else{
-                $data['msg'] = "参数错误";
-                return $data;
-            }
-        }else{
-            $data['msg'] = "对不起，暂无处理权限，请联系管理员";
-            return $data;
-        }
-    }
-    public function delete(Request $request){
-        $data['status'] = 400;
-        $data['msg'] = "未知错误";
-        $username = 'jkjunjia';
-        if(HomeController::hasAuth($username,AUTH_REGION)){
-            if($request->has('rid')){
-                $rid = $request->input('rid');
-                try {
-                    Region::where('id', $rid)->delete();
-                    $data['status'] = 200;
-                    $data['msg'] = "删除成功";
-                }catch (\Illuminate\Database\QueryException $ex){
-                    $data['msg'] = "数据库错误";
-                }
-                return $data;
-            }else{
-                $data['msg'] = "参数错误";
-                return $data;
-            }
-        }else{
-            $data['msg'] = "对不起，暂无处理权限，请联系管理员";
-            return $data;
-        }
-    }
 }
