@@ -304,6 +304,13 @@
 @section('custom-script')
     <script src="{{asset('/vendors/sidebar/sidebar-menu.js')}}"></script>
     <script>
+        var NEWDB = false;
+        var NEWSLAVE = false;
+        var NEWREADE = false;
+        var MSG = "";
+        var  ip_test= /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/; // 判断输入的是不是ip地址
+        var  port_test= /^([1-9]|[1-9]\\d{1,3}|[1-6][0-5][0-5][0-3][0-5])$/; // 判断输入的是不是端口号
+        var  reg = /^\w+$/; // 判断输入的是不是字母+数字+下划线
         $(function () {
             var region = $('#region').val();
             if(region != -1){
@@ -347,90 +354,191 @@
             showInfoModule(id);
         });
         $('#modify-conf').click(function () {
-            var conf_type = $('#conf_type').val();
+            var conf_type = $('#conf_type');
             var formData = new FormData();
-            formData.append('conf_type', conf_type);
-            if(conf_type == -1){
+            formData.append('conf_type', conf_type.val());
+            if(conf_type.val() == -1){
                 setError(conf_type, "conf_type", "请选择配置类型");
                 return;
-            }else if(conf_type == 0){//key-value
-                var key_conf_name = $('#key_conf_name').val();
-                var key_conf_value = $('#key_conf_value').val();
-                var reg = /^\w+$/; // 判断输入的是不是字母+数字+下划线
+            }else if(conf_type.val() == 0){//key-value
+                var key_conf_name = $('#key_conf_name');
+                var key_conf_value = $('#key_conf_value');
 
-                if(key_conf_name == ""){
+                if(key_conf_name.val() == ""){
                     setError(key_conf_name, "key_conf_name", "配置名称不能为空");
                     return;
-                }else if(! reg.test(key_conf_name)){
+                }else if(! reg.test(key_conf_name.val())){
                     setError(key_conf_name, "key_conf_name", "配置名称由数字、字母、下划线组成");
                     return;
+                }else{
+                    removeError(key_conf_name,'key_conf_name');
                 }
-                if(key_conf_value == ""){
+                if(key_conf_value.val() == ""){
                     setError(key_conf_value, "key_conf_value", "配置值不能为空");
                     return;
+                }else{
+                    removeError(key_conf_value,'key_conf_value');
                 }
-                formData.append('key_conf_name', key_conf_name);
-                formData.append('key_conf_value', key_conf_value);
-            }else if(conf_type == 1){
-                var  ip_test= /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/; // 判断输入的是不是ip地址
-                var  port_test= /^([1-9]|[1-9]\\d{1,3}|[1-6][0-5][0-5][0-3][0-5])$/; // 判断输入的是不是端口号
-                var reg = /^\w+$/; // 判断输入的是不是字母+数字+下划线
+                formData.append('key_conf_name', key_conf_name.val());
+                formData.append('key_conf_value', key_conf_value.val());
+                MSG = "你选择了KEY-VALUE模式输入，请确认填写正确";
+            }else if(conf_type.val() == 1){
+                var cdb_db_name = $('#cdb_db_name'); //配置名称
+                var cdb_db_ip = $('#cdb_db_ip');
+                var cdb_db_port = $('#cdb_db_port');
+                var cdb_db_user = $('#cdb_db_user');
+                var cdb_db_pass = $('#cdb_db_pass');
 
-                var cdb_db_name = $('#cdb_db_name').val(); //配置名称
-                var cdb_db_ip = $('#cdb_db_ip').val();
-                var cdb_db_port = $('#cdb_db_port').val();
-                var cdb_db_user = $('#cdb_db_user').val();
-                var cdb_db_pass = $('#cdb_db_pass').val();
+                var cdb_db_slave_ip = $('#cdb_db_slave_ip');
+                var cdb_db_slave_port = $('#cdb_db_slave_port');
+                var cdb_db_slave_user = $('#cdb_db_slave_user');
+                var cdb_db_slave_pass = $('#cdb_db_slave_pass');
 
-                var cdb_db_slave_ip = $('#cdb_db_slave_ip').val();
-                var cdb_db_slave_port = $('#cdb_db_slave_port').val();
-                var cdb_db_slave_user = $('#cdb_db_slave_user').val();
-                var cdb_db_slave_pass = $('#cdb_db_slave_pass').val();
+                var cdb_db_read_slave_ip = $('#cdb_db_read_slave_ip');
+                var cdb_db_read_slave_port = $('#cdb_db_read_slave_port');
+                var cdb_db_read_slave_user = $('#cdb_db_read_slave_user');
+                var cdb_db_read_slave_pass = $('#cdb_db_read_slave_pass');
 
-                var cdb_db_read_slave_ip = $('#cdb_db_read_slave_ip').val();
-                var cdb_db_read_slave_port = $('#cdb_db_read_slave_port').val();
-                var cdb_db_read_slave_user = $('#cdb_db_read_slave_user').val();
-                var cdb_db_read_slave_pass = $('#cdb_db_read_slave_pass').val();
-
-                if(cdb_db_name == "" || cdb_db_ip == "" || cdb_db_port == "" || cdb_db_user == "" || cdb_db_pass == ""){
+                if(cdb_db_name.val() == "" || cdb_db_ip.val() == "" || cdb_db_port.val() == "" || cdb_db_user.val() == "" || cdb_db_pass.val() == ""){
                     setError(cdb_db_name, "cdb_db_name", "必填字段区域");
                     return;
+                }else{
+                    removeError(cdb_db_name,'cdb_db_name');
                 }
-                if(!reg.test(cdb_db_name)){
+                if(!reg.test(cdb_db_name.val())){
                     setError(cdb_db_name, "cdb_db_name", "配置名称由数字、字母、下划线组成");
                     return;
+                }else{
+                    removeError(cdb_db_name,'cdb_db_name');
                 }
-                if(!ip_test.test(cdb_db_ip)){
+                if(!ip_test.test(cdb_db_ip.val())){
                     setError(cdb_db_ip, "cdb_db_ip", "IP地址不符合规范");
                     return;
+                }else{
+                    removeError(cdb_db_ip,'cdb_db_ip');
                 }
-                if(!port_test.test(cdb_db_port)){
+                if(!port_test.test(cdb_db_port.val())){
                     setError(cdb_db_port, "cdb_db_port", "端口不符合规范");
                     return;
+                }else{
+                    removeError(cdb_db_port,'cdb_db_port');
                 }
-                formData.append('cdb_db_name', cdb_db_name);
-                formData.append('cdb_db_ip', cdb_db_ip);
-                formData.append('cdb_db_port', cdb_db_port);
-                formData.append('cdb_db_user', cdb_db_user);
-                formData.append('cdb_db_pass', cdb_db_pass);
+                formData.append('cdb_db_name', cdb_db_name.val());
+                formData.append('cdb_db_ip', cdb_db_ip.val());
+                formData.append('cdb_db_port', cdb_db_port.val());
+                formData.append('cdb_db_user', cdb_db_user.val());
+                formData.append('cdb_db_pass', cdb_db_pass.val());
+                NEWDB = true;//key-value 填写正确
 
-                //判断
+                //判断mysql_从库信息是否填写完整
+                if(cdb_db_slave_ip.val() != "" && cdb_db_slave_port.val() != "" &&  cdb_db_slave_user.val() != "" && cdb_db_slave_pass.val() != ""){
+                    if(!ip_test.test(cdb_db_slave_ip.val())){
+                        setError(cdb_db_slave_ip, "cdb_db_slave_ip", "IP地址不符合规范");
+                        return;
+                    }else{
+                        removeError(cdb_db_slave_ip,'cdb_db_slave_ip');
+                    }
+                    if(!port_test.test(cdb_db_slave_port.val())){
+                        setError(cdb_db_slave_port, "cdb_db_slave_port", "端口不符合规范");
+                        return;
+                    }else{
+                        removeError(cdb_db_slave_port,'cdb_db_slave_port');
+                    }
+                    formData.append('cdb_db_slave_ip', cdb_db_slave_ip.val());
+                    formData.append('cdb_db_slave_port', cdb_db_slave_port.val());
+                    formData.append('cdb_db_slave_user', cdb_db_slave_user.val());
+                    formData.append('cdb_db_slave_pass', cdb_db_slave_pass.val());
+                    NEWSLAVE = true;//key-value 填写正确
+                }
+                //判断只读DB信息是否填写完整
+                if(cdb_db_read_slave_ip.val() != "" && cdb_db_read_slave_port.val() != "" &&  cdb_db_read_slave_user.val() != "" && cdb_db_read_slave_pass.val() != ""){
+                    if(!ip_test.test(cdb_db_read_slave_ip.val())){
+                        setError(cdb_db_read_slave_ip, "cdb_db_read_slave_ip", "IP地址不符合规范");
+                        return;
+                    }else{
+                        removeError(cdb_db_read_slave_ip,'cdb_db_read_slave_ip');
+                    }
+                    if(!port_test.test(cdb_db_read_slave_port.val())){
+                        setError(cdb_db_read_slave_port, "cdb_db_read_slave_port", "端口不符合规范");
+                        return;
+                    }else{
+                        removeError(cdb_db_read_slave_port,'cdb_db_read_slave_port');
+                    }
+                    formData.append('cdb_db_read_slave_ip', cdb_db_read_slave_ip.val());
+                    formData.append('cdb_db_read_slave_port', cdb_db_read_slave_port.val());
+                    formData.append('cdb_db_read_slave_user', cdb_db_read_slave_user.val());
+                    formData.append('cdb_db_read_slave_pass', cdb_db_read_slave_pass.val());
+                    NEWREADE = true;//key-value 填写正确
+                }
+                MSG = "你选择了CDB模式输入,并且确认填写信息有：";
+                if(NEWDB) MSG += "主库信息";
+                if(NEWSLAVE) MSG += "、从库信息";
+                if(NEWREADE) MSG += "、只读库信息";
 
-
+            } else if (conf_type.val() == 2) { // CVM模式输入
+                var cvm_inport_type = $('#cvm_inport_type');
+                var cvm_conf_value = $('#cvm_conf_value');
+                if(cvm_inport_type.val() != 1 && cvm_inport_type.val() != 0){
+                    setError(cvm_inport_type, "cvm_inport_type", "请选择配置导入方式");
+                    return;
+                }else{
+                    removeError(cvm_inport_type,'cvm_inport_type');
+                }
+                if(cvm_conf_value.val() == ""){
+                    setError(cvm_conf_value, "cvm_conf_value", "请输入配置值");
+                    return;
+                }else if(cvm_conf_value.val() != "" && cvm_inport_type.val() == 0){ //判断手动输入IP是否";"分割
+                    var iplists = cvm_conf_value.val().split(';');
+                    var flag = false;
+                    $.each(iplists,function(index,obj){
+                        console.log(obj);
+                        //判断ip地址是否合法
+                        if(!ip_test.test(obj)){
+                            setError(cvm_conf_value, "cvm_conf_value", "有IP地址不符合规范");
+                            flag = true;
+                            return false;
+                        }
+                    })
+                    if(flag) return false;
+                } else {
+                    removeError(cvm_conf_value,'cvm_conf_value');
+                }
+                //生成提示信息
+                MSG = "你选择了CVM模式输入,并且采用了";
+                if(cvm_inport_type.val() == 0) MSG += "手动输入IPlist方式";
+                else MSG += "从模块ID导入的方式";
             }
-            $.ajax({
-                url: "/qsdb/conf/add",
-                type: "post",
-                dataType: 'text',
-                cache: false,
-                contentType: false,
-                processData: false,
-                data: formData,
-                success: function (data) {
-                    var result = JSON.parse(data);
-                    checkResult(result.status,result.msg,$('#addModel'));
-                }
-            })
+            swal({
+                    title: "确认添加配置信息",
+                    text: MSG,
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "确定！",
+                    cancelButtonText: "取消！",
+                    closeOnConfirm: false,
+                    closeOnCancel: false
+                },
+                function(isConfirm){
+                    if (isConfirm) {
+                        $.ajax({
+                            url: "/qsdb/",
+                            type: "post",
+                            dataType: 'text',
+                            cache: false,
+                            contentType: false,
+                            processData: false,
+                            data: formData,
+                            success: function (data) {
+                                var result = JSON.parse(data);
+                                checkResult(result.status,result.msg,$('#addModel'));
+                            }
+                        })
+                    } else {
+                        swal("取消！", "你的虚拟文件是安全的:)",
+                            "error");
+                    }
+                });
         });
     </script>
 @endsection

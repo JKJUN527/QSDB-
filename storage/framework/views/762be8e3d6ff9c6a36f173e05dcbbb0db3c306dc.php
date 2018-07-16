@@ -19,6 +19,10 @@
     <link href="<?php echo e(asset('vendors/google-code-prettify/bin/prettify.min.css')); ?>" rel="stylesheet">
     <!-- Custom styling plus plugins -->
     <link href="<?php echo e(asset('vendors/build/css/custom.min.css')); ?>" rel="stylesheet">
+
+    <link href="<?php echo e(asset('vendors/sweetalert/sweetalert.css')); ?>" type="text/css" rel="stylesheet">
+
+    <script src="<?php echo e(asset('vendors/sweetalert/sweetalert.min.js')); ?>" type="text/javascript"></script>
     <style>
         nav{
             text-align: center;

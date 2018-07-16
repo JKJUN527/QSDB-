@@ -19,6 +19,10 @@
     <link href="{{asset('vendors/google-code-prettify/bin/prettify.min.css')}}" rel="stylesheet">
     <!-- Custom styling plus plugins -->
     <link href="{{asset('vendors/build/css/custom.min.css')}}" rel="stylesheet">
+
+    <link href="{{asset('vendors/sweetalert/sweetalert.css')}}" type="text/css" rel="stylesheet">
+
+    <script src="{{asset('vendors/sweetalert/sweetalert.min.js')}}" type="text/javascript"></script>
     <style>
         nav{
             text-align: center;
