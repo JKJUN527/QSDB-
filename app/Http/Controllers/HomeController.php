@@ -57,7 +57,7 @@ class HomeController extends Controller
                     $table_info->primary('confId');
                     $table_info->integer('confId');
                     $table_info->longtext('value');
-                    $table_info->longtext('lastValue');
+                    $table_info->longtext('lastValue')->nullable();
                     $table_info->timestamp('updateTime');
                 });
                 $std_data = Std::all();

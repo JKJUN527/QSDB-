@@ -34,6 +34,9 @@
             font-size: 1.7rem;
             color: coral;
         }
+        .modify-cdb{
+            display: none;
+        }
     </style>
 @endsection
 {{--@section('index-nav')--}}
@@ -141,7 +144,7 @@
                                                                 key-value
                                                             @elseif($item->type == 1)
                                                                 cdb
-                                                            @elseif($item->type == 2)
+                                                            @else
                                                                 cvm
                                                             @endif
                                                         </td>
@@ -151,8 +154,8 @@
                                                         </td>
                                                         <td class=" ">{{$item->updateTime}}</td>
                                                         <td class=" ">
-                                                            <button type="button" data-content="1" class="btn btn-round btn-primary" name="modify" >修改</button>
-                                                            <button type="button" data-content="1" class="btn btn-round btn-danger" name="rollback">回滚</button>
+                                                            <button type="button" data-content="{{$item->confId}}" class="btn btn-round btn-primary" name="modify" >修改</button>
+                                                            <button type="button" data-content="{{$item->confId}}" class="btn btn-round btn-danger" name="rollback">回滚</button>
                                                         </td>
                                                     </tr>
                                                     @empty
@@ -193,7 +196,7 @@
                     <form class="form-horizontal form-label-left">
                         <div class="form-group">
                             <label>产品名</label>
-                            <input type="text" class="form-control" style="display: none" name="region-id" id="region-id" value="-1">
+                            <input type="text" class="form-control" style="display: none" name="confId" id="confId" value="-1">
                             <input type="text" class="form-control" placeholder="" name="product_name" id="product_name" data-content="{{$data['condition']['productId']}}" disabled>
                         </div>
                         <div class="form-group">
@@ -241,8 +244,11 @@
                         <div class="cdb info_module">
                             <div class="form-group">
                                 <label class="info_title">主库信息，必填</label>
+                                <label>db-conf-name</label>
+                                <input type="text" class="form-control" placeholder="说明此DB的用途-配置名称" name="cdb_conf_name" id="cdb_conf_name">
+                                <label class="error" for="cdb_conf_name"></label>
                                 <label>db-name</label>
-                                <input type="text" class="form-control" placeholder="说明此DB的用途" name="cdb_db_name" id="cdb_db_name">
+                                <input type="text" class="form-control" placeholder="此DB的名称" name="cdb_db_name" id="cdb_db_name">
                                 <label class="error" for="cdb_db_name"></label>
                                 <label>db-ip</label>
                                 <input type="text" class="form-control" placeholder="此DB的IP" name="cdb_db_ip" id="cdb_db_ip">
@@ -259,6 +265,9 @@
                             </div>
                             <div class="form-group">
                                 <label class="info_title">mysql-db从库信息,没有可为空</label>
+                                <label>db-slave-name</label>
+                                <input type="text" class="form-control" placeholder="此DB的名称" name="cdb_db_slave_name" id="cdb_db_slave_name">
+                                <label class="error" for="cdb_db_slave_name"></label>
                                 <label>db-slave-ip</label>
                                 <input type="text" class="form-control" placeholder="db-slave-ip" name="cdb_db_slave_ip" id="cdb_db_slave_ip">
                                 <label class="error" for="cdb_db_slave_ip"></label>
@@ -274,18 +283,39 @@
                             </div>
                             <div class="form-group">
                                 <label class="info_title">mysql-只读DB信息,没有可为空</label>
-                                <label>db-slave-ip</label>
+                                <label>db-read-slave-name</label>
+                                <input type="text" class="form-control" placeholder="此DB的名称" name="cdb_db_read_slave_name" id="cdb_db_read_slave_name">
+                                <label class="error" for="cdb_db_read_slave_name"></label>
+                                <label>db-read-slave-ip</label>
                                 <input type="text" class="form-control" placeholder="db-slave-ip" name="cdb_db_read_slave_ip" id="cdb_db_read_slave_ip">
                                 <label class="error" for="cdb_db_read_slave_ip"></label>
-                                <label>db-slave-port</label>
+                                <label>db-read-slave-port</label>
                                 <input type="text" class="form-control" placeholder="db-slave-port" name="cdb_db_read_slave_port" id="cdb_db_read_slave_port">
                                 <label class="error" for="cdb_db_read_slave_port"></label>
-                                <label>db-slave-user</label>
+                                <label>db-read-slave-user</label>
                                 <input type="text" class="form-control" placeholder="db-slave-user" name="cdb_db_read_slave_user" id="cdb_db_read_slave_user">
                                 <label class="error" for="cdb_db_read_slave_user"></label>
-                                <label>db-slave-pass</label>
+                                <label>db-read-slave-pass</label>
                                 <input type="text" class="form-control" placeholder="db-slave-pass" name="cdb_db_read_slave_pass" id="cdb_db_read_slave_pass">
                                 <label class="error" for="cdb_db_read_slave_pass"></label>
+                            </div>
+                            <div class="modify-cdb form-group">
+                                <label class="info_title">修改DB配置信息</label>
+                                <label>db-name</label>
+                                <input type="text" class="form-control" placeholder="此DB的名称" name="modify_db_name" id="modify_db_name">
+                                <label class="error" for="modify_db_name"></label>
+                                <label>db-ip</label>
+                                <input type="text" class="form-control" placeholder="db-ip" name="modify_db_ip" id="modify_db_ip">
+                                <label class="error" for="modify_db_ip"></label>
+                                <label>db-port</label>
+                                <input type="text" class="form-control" placeholder="db-port" name="modify_db_port" id="modify_db_port">
+                                <label class="error" for="modify_db_port"></label>
+                                <label>db-user</label>
+                                <input type="text" class="form-control" placeholder="db-slave-user" name="modify_db_user" id="modify_db_user">
+                                <label class="error" for="modify_db_user"></label>
+                                <label>db-pass</label>
+                                <input type="text" class="form-control" placeholder="db-pass" name="modify_db_pass" id="modify_db_pass">
+                                <label class="error" for="modify_db_pass"></label>
                             </div>
                         </div>
                     </form>
@@ -309,10 +339,12 @@
         var NEWREADE = false;
         var MSG = "";
         var  ip_test= /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/; // 判断输入的是不是ip地址
-        var  port_test= /^([1-9]|[1-9]\\d{1,3}|[1-6][0-5][0-5][0-3][0-5])$/; // 判断输入的是不是端口号
+        var  port_test= /^([0-9]|[1-9]\d|[1-9]\d{2}|[1-9]\d{3}|[1-5]\d{4}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])$/; // 判断输入的是不是端口号
         var  reg = /^\w+$/; // 判断输入的是不是字母+数字+下划线
         $(function () {
             var region = $('#region').val();
+            var confId = $("#confId");
+            confId.val(-1);//重置模块框为新增状态
             if(region != -1){
                 //获取选中的产品模块名称
                 var product_name = $('.treeview').find('span.active').html();
@@ -331,7 +363,8 @@
         $(".module").click(function () {
             var productId = $(this).attr('data-target');
             var moduleId = $(this).attr('data-content');
-            window.location.href = "/qsdb/conf?productId=" + productId +"&moduleId=" + moduleId + "&region=-1";
+            var region = $("#region").val();
+            window.location.href = "/qsdb/conf?productId=" + productId +"&moduleId=" + moduleId + "&region=" + region ;
         });
         $("#region").change(function () {
             var productId = $(".treeview-menu").find("li.active").attr('data-target');
@@ -353,14 +386,102 @@
             var id = $(this).val();
             showInfoModule(id);
         });
+        //点击修改按钮
+        $("button[name='modify']").click(function () {
+            $('.info_module').hide();//关闭所有编辑页面
+
+            var confId = $(this).attr('data-content');
+            var region =  $("#region").val();
+            var formData = new FormData();
+            formData.append('confId', confId);
+            formData.append('region', region);
+            $.ajax({
+                url: "/qsdb/conf/modifyCheck",
+                type: "post",
+                dataType: 'text',
+                cache: false,
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function (data) {
+                    var result = JSON.parse(data);
+                    if(result.status == 200){
+                        //设置编辑界面，填充默认值
+                        var addModel = $("#addModel");
+                        var conf_type = $("#conf_type");
+                        var confId = $("#confId");
+                        var keyvalue = $(".keyvalue");
+                        var cdb = $(".cdb");
+                        var cvm = $(".cvm");
+                        console.log(result.conf);
+                        if(result.conf.type == 0){//key-value
+                            conf_type.val(0);
+                            conf_type.attr('disabled','disabled');
+                            keyvalue.find('#key_conf_name').val(result.conf.confName);
+                            keyvalue.find('#key_conf_value').val(result.confvalue.value);
+                            confId.val(result.conf.confId);//设置模态框为修改状态
+                            keyvalue.show();
+                            addModel.modal();
+                        }else if(result.conf.type == 1){//cdb
+                            var modify_cdb = $('.modify-cdb');
+                            conf_type.val(1);
+                            conf_type.attr('disabled','disabled');
+                            cdb.find('.form-group').hide(); //隐藏新增编辑框
+                            modify_cdb.show(); //打开修改DB编辑框
+                            var db_value = JSON.parse(result.confvalue.value);//获取DB信息
+                            modify_cdb.find('#modify_db_name').val(db_value.default);
+                            modify_cdb.find('#modify_db_ip').val(db_value.host);
+                            modify_cdb.find('#modify_db_port').val(db_value.port);
+                            modify_cdb.find('#modify_db_user').val(db_value.user);
+                            modify_cdb.find('#modify_db_pass').val(db_value.passwd);
+                            confId.val(result.conf.confId);//设置模态框为修改状态
+                            cdb.show();
+                            addModel.modal();
+                        }else if(result.conf.type == 21 || result.conf.type == 22){//cvm方式
+                            conf_type.val(2);
+                            conf_type.attr('disabled','disabled');
+                            var db_value = JSON.parse(result.confvalue.value);//获取DB信息
+                            if(result.conf.type == 21) cvm.find('#cvm_inport_type').val(0);
+                            else if(result.conf.type == 22) cvm.find('#cvm_inport_type').val(1);
+                            cvm.find('#cvm_conf_value').val(db_value.default);
+                            confId.val(result.conf.confId);//设置模态框为修改状态
+                            cvm.show();
+                            addModel.modal();
+                        }
+                        console.log(result.confvalue);
+                    }else{
+                        checkResult(result.status,result.msg,null);
+                    }
+                }
+            })
+        });
         $('#modify-conf').click(function () {
             var conf_type = $('#conf_type');
+            var region = $('#region');
+            var productId = $(".treeview-menu").find("li.active").attr('data-target');
+            var moduleId = $(".treeview-menu").find("li.active").attr('data-content');
+            var confId = $("#confId"); //配置ID 如为-1则新增状态  否则val()值为具体待修改配置值
+
+            if(productId == undefined || moduleId == undefined){
+                swal("","请先选择新增配置所在产品模块","error");
+                return;
+            }
+            if(region.val() == -1){
+                swal("","请先选择新增配置所在地域","error");
+                return;
+            }
             var formData = new FormData();
             formData.append('conf_type', conf_type.val());
+            formData.append('region', region.val());
+            formData.append('productId', productId);
+            formData.append('moduleId', moduleId);
+
             if(conf_type.val() == -1){
                 setError(conf_type, "conf_type", "请选择配置类型");
                 return;
             }else if(conf_type.val() == 0){//key-value
+                removeError(conf_type,'conf_type');
+
                 var key_conf_name = $('#key_conf_name');
                 var key_conf_value = $('#key_conf_value');
 
@@ -383,99 +504,146 @@
                 formData.append('key_conf_value', key_conf_value.val());
                 MSG = "你选择了KEY-VALUE模式输入，请确认填写正确";
             }else if(conf_type.val() == 1){
-                var cdb_db_name = $('#cdb_db_name'); //配置名称
+                removeError(conf_type,'conf_type');
+
+                var cdb_conf_name = $('#cdb_conf_name'); //配置名称
+                var cdb_db_name = $('#cdb_db_name'); //数据库名称
                 var cdb_db_ip = $('#cdb_db_ip');
                 var cdb_db_port = $('#cdb_db_port');
                 var cdb_db_user = $('#cdb_db_user');
                 var cdb_db_pass = $('#cdb_db_pass');
 
+                var cdb_db_slave_name = $('#cdb_db_slave_name'); //数据库名称
                 var cdb_db_slave_ip = $('#cdb_db_slave_ip');
                 var cdb_db_slave_port = $('#cdb_db_slave_port');
                 var cdb_db_slave_user = $('#cdb_db_slave_user');
                 var cdb_db_slave_pass = $('#cdb_db_slave_pass');
 
+                var cdb_db_read_slave_name = $('#cdb_db_read_slave_name'); //数据库名称
                 var cdb_db_read_slave_ip = $('#cdb_db_read_slave_ip');
                 var cdb_db_read_slave_port = $('#cdb_db_read_slave_port');
                 var cdb_db_read_slave_user = $('#cdb_db_read_slave_user');
                 var cdb_db_read_slave_pass = $('#cdb_db_read_slave_pass');
 
-                if(cdb_db_name.val() == "" || cdb_db_ip.val() == "" || cdb_db_port.val() == "" || cdb_db_user.val() == "" || cdb_db_pass.val() == ""){
-                    setError(cdb_db_name, "cdb_db_name", "必填字段区域");
-                    return;
-                }else{
-                    removeError(cdb_db_name,'cdb_db_name');
-                }
-                if(!reg.test(cdb_db_name.val())){
-                    setError(cdb_db_name, "cdb_db_name", "配置名称由数字、字母、下划线组成");
-                    return;
-                }else{
-                    removeError(cdb_db_name,'cdb_db_name');
-                }
-                if(!ip_test.test(cdb_db_ip.val())){
-                    setError(cdb_db_ip, "cdb_db_ip", "IP地址不符合规范");
-                    return;
-                }else{
-                    removeError(cdb_db_ip,'cdb_db_ip');
-                }
-                if(!port_test.test(cdb_db_port.val())){
-                    setError(cdb_db_port, "cdb_db_port", "端口不符合规范");
-                    return;
-                }else{
-                    removeError(cdb_db_port,'cdb_db_port');
-                }
-                formData.append('cdb_db_name', cdb_db_name.val());
-                formData.append('cdb_db_ip', cdb_db_ip.val());
-                formData.append('cdb_db_port', cdb_db_port.val());
-                formData.append('cdb_db_user', cdb_db_user.val());
-                formData.append('cdb_db_pass', cdb_db_pass.val());
-                NEWDB = true;//key-value 填写正确
+                var cdb_modify_db_name = $('#modify_db_name'); //修改数据库信息
+                var cdb_modify_db_ip = $('#modify_db_ip');
+                var cdb_modify_db_port = $('#modify_db_port');
+                var cdb_modify_db_user = $('#modify_db_user');
+                var cdb_modify_db_pass = $('#modify_db_pass');
 
-                //判断mysql_从库信息是否填写完整
-                if(cdb_db_slave_ip.val() != "" && cdb_db_slave_port.val() != "" &&  cdb_db_slave_user.val() != "" && cdb_db_slave_pass.val() != ""){
-                    if(!ip_test.test(cdb_db_slave_ip.val())){
-                        setError(cdb_db_slave_ip, "cdb_db_slave_ip", "IP地址不符合规范");
+                if(confId == -1){
+                    if(cdb_conf_name.val() == "" || cdb_db_name.val() == "" || cdb_db_ip.val() == "" || cdb_db_port.val() == "" || cdb_db_user.val() == "" || cdb_db_pass.val() == ""){
+                        setError(cdb_conf_name, "cdb_conf_name", "必填字段区域");
                         return;
                     }else{
-                        removeError(cdb_db_slave_ip,'cdb_db_slave_ip');
+                        removeError(cdb_conf_name,'cdb_conf_name');
                     }
-                    if(!port_test.test(cdb_db_slave_port.val())){
-                        setError(cdb_db_slave_port, "cdb_db_slave_port", "端口不符合规范");
+                    if(!reg.test(cdb_conf_name.val())){
+                        setError(cdb_conf_name, "cdb_conf_name", "配置名称由数字、字母、下划线组成");
                         return;
                     }else{
-                        removeError(cdb_db_slave_port,'cdb_db_slave_port');
+                        removeError(cdb_db_name,'cdb_db_name');
                     }
-                    formData.append('cdb_db_slave_ip', cdb_db_slave_ip.val());
-                    formData.append('cdb_db_slave_port', cdb_db_slave_port.val());
-                    formData.append('cdb_db_slave_user', cdb_db_slave_user.val());
-                    formData.append('cdb_db_slave_pass', cdb_db_slave_pass.val());
-                    NEWSLAVE = true;//key-value 填写正确
+                    if(!reg.test(cdb_db_name.val())){
+                        setError(cdb_db_name, "cdb_db_name", "数据库名称由数字、字母、下划线组成");
+                        return;
+                    }else{
+                        removeError(cdb_db_name,'cdb_db_name');
+                    }
+                    if(!ip_test.test(cdb_db_ip.val())){
+                        setError(cdb_db_ip, "cdb_db_ip", "IP地址不符合规范");
+                        return;
+                    }else{
+                        removeError(cdb_db_ip,'cdb_db_ip');
+                    }
+                    if(!port_test.test(cdb_db_port.val())){
+                        setError(cdb_db_port, "cdb_db_port", "端口不符合规范");
+                        return;
+                    }else{
+                        removeError(cdb_db_port,'cdb_db_port');
+                    }
+                    formData.append('cdb_conf_name', cdb_conf_name.val());
+                    formData.append('cdb_db_name', cdb_db_name.val());
+                    formData.append('cdb_db_ip', cdb_db_ip.val());
+                    formData.append('cdb_db_port', cdb_db_port.val());
+                    formData.append('cdb_db_user', cdb_db_user.val());
+                    formData.append('cdb_db_pass', cdb_db_pass.val());
+                    NEWDB = true;//key-value 填写正确
+
+                    //判断mysql_从库信息是否填写完整
+                    if(cdb_db_slave_name.val() != "" && cdb_db_slave_ip.val() != "" && cdb_db_slave_port.val() != "" &&  cdb_db_slave_user.val() != "" && cdb_db_slave_pass.val() != ""){
+                        if(!ip_test.test(cdb_db_slave_ip.val())){
+                            setError(cdb_db_slave_ip, "cdb_db_slave_ip", "IP地址不符合规范");
+                            return;
+                        }else{
+                            removeError(cdb_db_slave_ip,'cdb_db_slave_ip');
+                        }
+                        if(!port_test.test(cdb_db_slave_port.val())){
+                            setError(cdb_db_slave_port, "cdb_db_slave_port", "端口不符合规范");
+                            return;
+                        }else{
+                            removeError(cdb_db_slave_port,'cdb_db_slave_port');
+                        }
+                        formData.append('cdb_db_slave_name', cdb_db_slave_name.val());
+                        formData.append('cdb_db_slave_ip', cdb_db_slave_ip.val());
+                        formData.append('cdb_db_slave_port', cdb_db_slave_port.val());
+                        formData.append('cdb_db_slave_user', cdb_db_slave_user.val());
+                        formData.append('cdb_db_slave_pass', cdb_db_slave_pass.val());
+                        formData.append('NEWSLAVE', NEWSLAVE);
+                        NEWSLAVE = true;//key-value 填写正确
+                    }
+                    //判断只读DB信息是否填写完整
+                    if(cdb_db_read_slave_name.val() != "" && cdb_db_read_slave_ip.val() != "" && cdb_db_read_slave_port.val() != "" &&  cdb_db_read_slave_user.val() != "" && cdb_db_read_slave_pass.val() != ""){
+                        if(!ip_test.test(cdb_db_read_slave_ip.val())){
+                            setError(cdb_db_read_slave_ip, "cdb_db_read_slave_ip", "IP地址不符合规范");
+                            return;
+                        }else{
+                            removeError(cdb_db_read_slave_ip,'cdb_db_read_slave_ip');
+                        }
+                        if(!port_test.test(cdb_db_read_slave_port.val())){
+                            setError(cdb_db_read_slave_port, "cdb_db_read_slave_port", "端口不符合规范");
+                            return;
+                        }else{
+                            removeError(cdb_db_read_slave_port,'cdb_db_read_slave_port');
+                        }
+                        formData.append('cdb_db_read_slave_name', cdb_db_read_slave_name.val());
+                        formData.append('cdb_db_read_slave_ip', cdb_db_read_slave_ip.val());
+                        formData.append('cdb_db_read_slave_port', cdb_db_read_slave_port.val());
+                        formData.append('cdb_db_read_slave_user', cdb_db_read_slave_user.val());
+                        formData.append('cdb_db_read_slave_pass', cdb_db_read_slave_pass.val());
+                        formData.append('NEWREADE', NEWREADE);
+                        NEWREADE = true;//key-value 填写正确
+                        MSG = "你选择了CDB模式输入,并且确认填写信息有：";
+                        if(NEWDB) MSG += "主库信息";
+                        if(NEWSLAVE) MSG += "、从库信息";
+                        if(NEWREADE) MSG += "、只读库信息";
+                    }
+                }else{
+                    //判断修改数据库信息是否填写完整
+                    if(cdb_modify_db_name.val() != "" && cdb_modify_db_ip.val() != "" &&  cdb_modify_db_port.val() != "" && cdb_modify_db_user.val() != "" && cdb_modify_db_pass.val() != ""){
+                        if(!ip_test.test(cdb_modify_db_ip.val())){
+                            setError(cdb_modify_db_ip, "cdb_modify_db_ip", "IP地址不符合规范");
+                            return;
+                        }else{
+                            removeError(cdb_modify_db_ip,'cdb_modify_db_ip');
+                        }
+                        if(!port_test.test(cdb_modify_db_port.val())){
+                            setError(cdb_modify_db_port, "cdb_modify_db_port", "端口不符合规范");
+                            return;
+                        }else{
+                            removeError(cdb_modify_db_port,'cdb_modify_db_port');
+                        }
+                        formData.append('cdb_modify_db_name', cdb_modify_db_name.val());
+                        formData.append('cdb_modify_db_ip', cdb_modify_db_ip.val());
+                        formData.append('cdb_modify_db_port', cdb_modify_db_port.val());
+                        formData.append('cdb_modify_db_user', cdb_modify_db_user.val());
+                        formData.append('cdb_modify_db_pass', cdb_modify_db_pass.val());
+                    }
                 }
-                //判断只读DB信息是否填写完整
-                if(cdb_db_read_slave_ip.val() != "" && cdb_db_read_slave_port.val() != "" &&  cdb_db_read_slave_user.val() != "" && cdb_db_read_slave_pass.val() != ""){
-                    if(!ip_test.test(cdb_db_read_slave_ip.val())){
-                        setError(cdb_db_read_slave_ip, "cdb_db_read_slave_ip", "IP地址不符合规范");
-                        return;
-                    }else{
-                        removeError(cdb_db_read_slave_ip,'cdb_db_read_slave_ip');
-                    }
-                    if(!port_test.test(cdb_db_read_slave_port.val())){
-                        setError(cdb_db_read_slave_port, "cdb_db_read_slave_port", "端口不符合规范");
-                        return;
-                    }else{
-                        removeError(cdb_db_read_slave_port,'cdb_db_read_slave_port');
-                    }
-                    formData.append('cdb_db_read_slave_ip', cdb_db_read_slave_ip.val());
-                    formData.append('cdb_db_read_slave_port', cdb_db_read_slave_port.val());
-                    formData.append('cdb_db_read_slave_user', cdb_db_read_slave_user.val());
-                    formData.append('cdb_db_read_slave_pass', cdb_db_read_slave_pass.val());
-                    NEWREADE = true;//key-value 填写正确
-                }
-                MSG = "你选择了CDB模式输入,并且确认填写信息有：";
-                if(NEWDB) MSG += "主库信息";
-                if(NEWSLAVE) MSG += "、从库信息";
-                if(NEWREADE) MSG += "、只读库信息";
 
             } else if (conf_type.val() == 2) { // CVM模式输入
+                removeError(conf_type,'conf_type');
+
                 var cvm_inport_type = $('#cvm_inport_type');
                 var cvm_conf_value = $('#cvm_conf_value');
                 if(cvm_inport_type.val() != 1 && cvm_inport_type.val() != 0){
@@ -498,47 +666,83 @@
                             flag = true;
                             return false;
                         }
-                    })
+                    });
                     if(flag) return false;
                 } else {
                     removeError(cvm_conf_value,'cvm_conf_value');
                 }
+                formData.append('cvm_inport_type', cvm_inport_type.val());
+                formData.append('cvm_conf_value', cvm_conf_value.val());
                 //生成提示信息
                 MSG = "你选择了CVM模式输入,并且采用了";
                 if(cvm_inport_type.val() == 0) MSG += "手动输入IPlist方式";
                 else MSG += "从模块ID导入的方式";
             }
-            swal({
-                    title: "确认添加配置信息",
-                    text: MSG,
-                    type: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#DD6B55",
-                    confirmButtonText: "确定！",
-                    cancelButtonText: "取消！",
-                    closeOnConfirm: false,
-                    closeOnCancel: false
-                },
-                function(isConfirm){
-                    if (isConfirm) {
-                        $.ajax({
-                            url: "/qsdb/",
-                            type: "post",
-                            dataType: 'text',
-                            cache: false,
-                            contentType: false,
-                            processData: false,
-                            data: formData,
-                            success: function (data) {
-                                var result = JSON.parse(data);
-                                checkResult(result.status,result.msg,$('#addModel'));
-                            }
-                        })
-                    } else {
-                        swal("取消！", "你的虚拟文件是安全的:)",
-                            "error");
-                    }
-                });
+            if(confId.val() == -1){//新增配置项
+                swal({
+                        title: "确认添加配置信息",
+                        text: MSG,
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "确定！",
+                        cancelButtonText: "取消！",
+                        closeOnConfirm: false,
+                        closeOnCancel: false
+                    },
+                    function(isConfirm){
+                        if (isConfirm) {
+                            $.ajax({
+                                url: "/qsdb/conf/add",
+                                type: "post",
+                                dataType: 'text',
+                                cache: false,
+                                contentType: false,
+                                processData: false,
+                                data: formData,
+                                success: function (data) {
+                                    var result = JSON.parse(data);
+                                    checkResult(result.status,result.msg,$('#addModel'));
+                                }
+                            })
+                        } else {
+                            swal("取消！", "重新检查你的配置信息)", "error");
+                        }
+                    });
+            }else{
+                formData.append('confId', confId.val());
+                swal({
+                        title: "确认提交修改配置？",
+                        text: MSG,
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "确定！",
+                        cancelButtonText: "取消！",
+                        closeOnConfirm: false,
+                        closeOnCancel: false
+                    },
+                    function(isConfirm){
+                        if (isConfirm) {
+                            $.ajax({
+                                url: "/qsdb/conf/modifyPost",
+                                type: "post",
+                                dataType: 'text',
+                                cache: false,
+                                contentType: false,
+                                processData: false,
+                                data: formData,
+                                success: function (data) {
+                                    var result = JSON.parse(data);
+                                    checkResult(result.status,result.msg,$('#addModel'));
+                                }
+                            })
+                        } else {
+                            swal("取消！", "重新检查你的配置信息)", "error");
+                        }
+                    });
+            }
+
         });
     </script>
 @endsection
