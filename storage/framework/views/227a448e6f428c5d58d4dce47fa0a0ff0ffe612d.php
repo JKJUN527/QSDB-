@@ -28,6 +28,11 @@
             <div class="menu_section">
                 <h3>功能区</h3>
                 <ul class="nav side-menu">
+                    <li <?php if($activeIndex == 1): ?> class="active" <?php endif; ?>>
+                        <a href="/qsdb/admin">
+                            <i class="fa fa-edit"></i> 权限管理
+                        </a>
+                    </li>
                     <li <?php if($activeIndex == 0): ?> class="active" <?php endif; ?>>
                         <a>
                             <i class="fa fa-home"></i> QSDB <span class="fa fa-chevron-down"></span>
@@ -38,16 +43,11 @@
                             <li <?php if($activeIndexSecend == 2): ?> class="current-page" <?php endif; ?>><a href="/qsdb/conf">配置项管理</a></li>
                         </ul>
                     </li>
-                    
-                        
-                            
-                            
-                            
-                            
-                            
-                            
-                        
-                    
+                    <li <?php if($activeIndex == 2): ?> class="active" <?php endif; ?>>
+                        <a>
+                            <i class="fa fa-table"></i> 变更记录
+                        </a>
+                    </li>
                     
                         
                             

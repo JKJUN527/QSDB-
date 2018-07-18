@@ -35,4 +35,10 @@ Route::get('/qsdb/conf', ['uses' => 'QSDBConfController@confIndex']);//页面显
 Route::post('/qsdb/conf/add', ['uses' => 'QSDBConfController@confAdd']);//添加配置项
 Route::post('/qsdb/conf/modifyCheck', ['uses' => 'QSDBConfController@confCheck']);//查询配置项
 Route::post('/qsdb/conf/modifyPost', ['uses' => 'QSDBConfController@confModify']);//上传修改值
+Route::post('/qsdb/conf/rollback', ['uses' => 'QSDBConfController@rollBack']);//回滚上次配置值
+//权限管理
+Route::get('/qsdb/admin', ['uses' => 'QSDBAdminController@adminIndex']);//页面显示
+Route::post('/qsdb/admin/add', ['uses' => 'QSDBAdminController@adminAdd']);//添加权限
+Route::post('/qsdb/admin/delete', ['uses' => 'QSDBAdminController@adminDelete']);//删除权限
+
 

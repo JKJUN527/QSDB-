@@ -28,6 +28,11 @@
             <div class="menu_section">
                 <h3>功能区</h3>
                 <ul class="nav side-menu">
+                    <li @if($activeIndex == 1) class="active" @endif>
+                        <a href="/qsdb/admin">
+                            <i class="fa fa-edit"></i> 权限管理
+                        </a>
+                    </li>
                     <li @if($activeIndex == 0) class="active" @endif>
                         <a>
                             <i class="fa fa-home"></i> QSDB <span class="fa fa-chevron-down"></span>
@@ -38,16 +43,11 @@
                             <li @if($activeIndexSecend == 2) class="current-page" @endif><a href="/qsdb/conf">配置项管理</a></li>
                         </ul>
                     </li>
-                    {{--<li><a><i class="fa fa-edit"></i> Forms <span class="fa fa-chevron-down"></span></a>--}}
-                        {{--<ul class="nav child_menu">--}}
-                            {{--<li><a href="form.html">General Form</a></li>--}}
-                            {{--<li><a href="form_advanced.html">Advanced Components</a></li>--}}
-                            {{--<li><a href="form_validation.html">Form Validation</a></li>--}}
-                            {{--<li><a href="form_wizards.html">Form Wizard</a></li>--}}
-                            {{--<li><a href="form_upload.html">Form Upload</a></li>--}}
-                            {{--<li><a href="form_buttons.html">Form Buttons</a></li>--}}
-                        {{--</ul>--}}
-                    {{--</li>--}}
+                    <li @if($activeIndex == 2) class="active" @endif>
+                        <a>
+                            <i class="fa fa-table"></i> 变更记录
+                        </a>
+                    </li>
                     {{--<li><a><i class="fa fa-desktop"></i> UI Elements <span class="fa fa-chevron-down"></span></a>--}}
                         {{--<ul class="nav child_menu">--}}
                             {{--<li><a href="general_elements.html">General Elements</a></li>--}}

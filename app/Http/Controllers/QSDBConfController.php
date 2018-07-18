@@ -384,5 +384,36 @@ class QSDBConfController extends Controller
         }
         return $data;
     }
+    public function rollBack(Request $request){
+        $data  = array();
+        $data['status'] = 400;
+        $data['msg'] = "未知错误";
+        $username = 'jkjunjia';
+        if(!HomeController::hasAuth($username,AUTH_REGION)){
+            $data['msg'] = "无权操作";
+            return $data;
+        }
+        if($request->has('region') && $request->has('confId')){
+            $region = $request->input('region');
+            $confId = $request->input('confId');
+            try{
+                //回滚地域配置值
+                $insertConf = DB::table("dconfvalue_" . $region)->where('confId',$confId)->first();
+                DB::table("dconfvalue_" . $region)->where('confId',$confId)
+                    ->update([
+                        'value'=>$insertConf->lastValue,
+                        'lastValue'=>$insertConf->value
+                    ]);
+                $data['status'] = 200;
+                $data['msg'] = "回滚成功";
+            }catch (\Illuminate\Database\QueryException $ex){
+                $data['msg'] = "数据库错误" . $ex->getMessage();
+                return $data;
+            }
+        }else{
+            $data['msg'] = '参数错误';
+        }
+        return $data;
+    }
 
 }

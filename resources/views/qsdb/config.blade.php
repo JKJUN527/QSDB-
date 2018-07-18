@@ -13,8 +13,9 @@
     <link href="{{asset('/vendors/sidebar/sidebar-menu.css')}}" rel="stylesheet">
     <style>
         .even .btn{
-            margin:0 0 ;
+            /*margin:0 0 ;*/
             padding: 0 10px 0 10px;
+            margin-bottom: 2px;
         }
         .info_module{
             background-color: #EDEDED;
@@ -23,11 +24,21 @@
         }
         .conf_value{
             vertical-align: top;
-            width: 600px;
+            width: 500px;
             padding: 0;
             height: 2.2rem;
             background-color:rgba(0,0,0,0);
             border: none;
+            padding-right: 20px;
+        }
+        .last_conf_value{
+            vertical-align: top;
+            width: 200px;
+            padding: 0;
+            height: 2.2rem;
+            background-color:rgba(0,0,0,0);
+            border: none;
+            padding-right: 20px;
         }
         .info_title{
             display: block;
@@ -124,6 +135,7 @@
                                                     <th class="column-title">配置类型</th>
                                                     <th class="column-title">配置名</th>
                                                     <th class="column-title">配置值</th>
+                                                    <th class="column-title">历史配置值</th>
                                                     <th class="column-title">更新时间</th>
                                                     <th class="column-title"><span class="nobr">Action</span>操作</th>
                                                     <th class="bulk-actions" colspan="4">
@@ -151,6 +163,9 @@
                                                         <td class=" ">{{$item->confName}}</td>
                                                         <td class=" ">
                                                             <textarea rows="1" class="conf_value">{{$item->value}}</textarea>
+                                                        </td>
+                                                        <td class=" ">
+                                                            <textarea rows="1" class="last_conf_value">{{$item->lastValue}}</textarea>
                                                         </td>
                                                         <td class=" ">{{$item->updateTime}}</td>
                                                         <td class=" ">
@@ -743,6 +758,42 @@
                     });
             }
 
+        });
+        $("button[name='rollback']").click(function () {
+            var confId = $(this).attr('data-content');
+            var region = $('#region');
+
+            if(region.val() == -1){
+                swal('','地域值不正确，试试刷新!','error');
+                return ;
+            }
+            var formData = new FormData();
+            formData.append('confId', confId);
+            formData.append('region', region.val());
+            swal({
+                    title: "确定回滚配置吗？",
+                    text: "回滚后再次回滚即可恢复原配置！",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "确定",
+                    closeOnConfirm: false
+                },
+                function(){
+                        $.ajax({
+                            url: "/qsdb/conf/rollback",
+                            type: "post",
+                            dataType: 'text',
+                            cache: false,
+                            contentType: false,
+                            processData: false,
+                            data: formData,
+                            success: function (data) {
+                                var result = JSON.parse(data);
+                                checkResult(result.status,result.msg,null);
+                            }
+                        })
+                });
         });
     </script>
 @endsection
